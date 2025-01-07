@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+##
+## EPITECH PROJECT, 2024
+## __pycache__
+## File description:
+## 103cipher
+##
+
+import sys
+from usage import *
+from error import *
+from encrypt import *
+from decrypt import *
+
+def main():
+    error_imput()
+    message = sys.argv[1]
+    key = sys.argv[2]
+    flag = sys.argv[3]
+
+if __name__ == "__main__":
+    main()

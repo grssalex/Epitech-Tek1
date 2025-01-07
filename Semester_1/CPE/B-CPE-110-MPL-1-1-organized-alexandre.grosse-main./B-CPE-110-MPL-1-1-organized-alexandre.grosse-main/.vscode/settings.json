@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "my.h": "c",
+        "stdlib.h": "c",
+        "sort.C": "cpp"
+    }
+}

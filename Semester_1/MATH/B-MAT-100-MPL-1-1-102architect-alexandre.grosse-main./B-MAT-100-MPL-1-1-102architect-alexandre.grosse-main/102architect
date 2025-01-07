@@ -1,0 +1,124 @@
+#!/usr/bin/python3
+
+from sys import argv
+from math import *
+
+def flag_h():
+    print("USAGE")
+    print("    ./102architect x y tranfo1 arg11 [arg12] [transfo2 arg21 [arg22]] ...\n\n")
+    print("DESCRIPTION")
+    print("    x   abscissa of the original point")
+    print("    y   ordinate of the original point")
+    print("    transfo arg1 [arg2]")
+    print("    -t i j translation along vector (i, j)")
+    print("    -z m n scaling by factors m (x-axis) and n (y-axis)")
+    print("    -r d   rotation centered in O by a d degree angle")
+    print("    -s d   reflection over the axis passing through O with an inclination")
+    print("           angle of d degrees")
+
+# matrix qui permet de stocker les valeurs
+identity_matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
+# Fonction qui permet de multiplier deux matrices entre elles
+def translation(x, y, t1, t2):
+    identity_matrix[0][2] = t1 # permet de modifier la valeur de la translation en x
+    identity_matrix[1][2] = t2 # permet de modifier la valeur de la translation en y
+    return identity_matrix
+
+def flag_t(x, y, i, argc, argv ): # i signifie la position de l'argument -t
+    if i + 2 < argc:
+        try:
+            t1 = float(argv[i + 1])
+            t2 = float(argv[i + 2])
+            translation(x, y, t1, t2)
+        except ValueError:
+            print("Error: invalid argument")
+            exit(84)
+    else:
+        print("Error")
+        exit(84)
+    translation(x, y, t1, t2)
+    print("Translation along vector ({}, {})".format(t1, t2))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(1), float(0), float(identity_matrix[0][2])))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(0), float(1), float(identity_matrix[1][2])))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(0), float(0), float(1)))
+    print("({:.2f}, {:.2f}) => ({:.2f}, {:.2f})".format(float(x), float(y), float(x) + float(t1), float(y) + float(t2)))
+
+#fonction scaling ( mise a l'echelle de la figure ) qui
+# modifie les valeurs de l'echelle en x et y
+def scaling(x, y, scaling1, scaling2):
+    identity_matrix[0][0] = scaling1 # permet de modifier la valeur de l'echelle en x
+    identity_matrix[1][1] = scaling2 # permet de modifier la valeur de l'echelle en y
+    return identity_matrix
+
+def flag_z(x, y, i, argc, argv):
+    if i + 2 < argc:
+        try:
+            scaling1 = float(argv[i + 1])
+            scaling2 = float(argv[i + 2])
+            scaling(x, y, scaling1, scaling2)
+        except ValueError:
+            print("Error: invalid argument")
+            exit(84)
+    else:
+        print("exit error")
+        exit(84)
+    scaling(x, y, scaling1, scaling2)
+    print("Scaling by factors {} and {}".format(scaling1, scaling2))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(scaling1), float(0), float(0)))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(0), float(scaling2), float(0)))
+    print("{:.2f}\t{:.2f}\t{:.2f}".format(float(0), float(0), float(1)))
+    print("({:.2f}, {:.2f}) => ({:.2f}, {:.2f})".format(float(x), float(y), float(x) * float(scaling1), float(y) * float(scaling2)))
+
+
+#fonction qui permet de faire une rotation de la figure
+def rotation(x, y, t5):
+    identity_matrix[0][0] = cos(t5) # permet de modifier la valeur de la rotation en x
+    identity_matrix[0][1] = -sin(t5) # permet de modifier la valeur de la rotation en y ( - sin car en trigo c'est dans le sens inverse)
+    identity_matrix[1][0] = sin(t5) 
+    identity_matrix[1][1] = cos(t5)
+    return identity_matrix
+
+def flag_r(x, y, i, argc, argv):
+        if i + 1 < argc:
+            try:
+                t5 = int(argv[i + 1]) # t5 car on y donne la rotation ds la fonction précédente
+            except ValueError:
+                print("Error: invalid argument")
+                exit(84)
+        else:
+            print("Error: invalid argument")
+            exit(84)
+        rotation(x, y, radians(t5))
+        print("Rotation by a {} degree angle".format(t5))
+        print("{:.2f}\t{:.2f}\t{:.2f}".format(float(identity_matrix[0][0]), float(identity_matrix[0][1]), float(0)))
+        print("{:.2f}\t{:.2f}\t{:.2f}".format(float(identity_matrix[1][0]), float(identity_matrix[1][1]), float(0)))
+        print("{:.2f}\t{:.2f}\t{:.2f}".format(float(0), float(0), float(1)))
+        print("({:.2f}, {:.2f}) => ({:.2f}, {:.2f})".format(float(x), float(y), float(x) * float(cos(radians(t5))) - float(y) * float(sin(radians(t5))), float(x) * float(sin(radians(t5))) + float(y) * float(cos(radians(t5)))))    
+
+
+def main(argc, argv):
+    if argc > 13:
+        print("Error argc > 13 ")
+        exit(84)
+    if "-h" in argv and argc < 3:
+        flag_h()
+        exit(0)
+    try:
+        if "-t" in argv:
+            flag_t(float(argv[1]), float(argv[2]), argv.index("-t"), argc, argv)
+            exit(0)
+        if "-z" in argv:
+            flag_z(float(argv[1]), float(argv[2]), argv.index("-z"), argc, argv)
+            exit(0)
+        if "-r" in argv and argc < 6:
+            flag_r(float(argv[1]), float(argv[2]), argv.index("-r"), argc, argv)
+            exit(0)
+    except ValueError:
+        print("Error: invalid argument")
+        exit(84)
+    print("Error : -FLAG doesn't exist")
+    exit(84)
+
+if __name__ == "__main__": #permet de verifier si le fichier est executé en tant que programme
+    main(len(argv), argv)
